@@ -1,0 +1,8 @@
+.canvas-container {
+    background-color:black;
+}
+
+canvas {
+    background-color:#ffffff;
+    justify-content: center;
+}
