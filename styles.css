@@ -1,8 +1,16 @@
 .canvas-container {
+    width: 80%;
     background-color:black;
 }
 
+.button-container {
+    display: flex;
+    flex-direction: column;
+    
+}
+
+
 canvas {
-    background-color:#ffffff;
+    background-color:#d8d8d8;
     justify-content: center;
 }
