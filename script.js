@@ -50,6 +50,14 @@ window.addEventListener("load", function() {
         }
     }
 
+    function renderShapes() {
+        ctx.clearRect(0, 0, c.width, c.height);
+        for (i=0; i<shapes.length; i++) {
+            ctx.clearRect(0, 0, c.width, c.height);
+            shapes[i].draw();
+        }
+    }
+
     document.getElementById("circle_button").addEventListener("click", function() {
         currentShape = Circle;
     });
@@ -66,14 +74,12 @@ window.addEventListener("load", function() {
         let currentSize = document.getElementById("size_slider").value;
         let currentColor = document.getElementById("color_slider").value;
         shapes.push(new currentShape(currentSize, currentColor, [x, y]));
-        for (i=0; i<shapes.length; i++) {
-            ctx.clearRect(0, 0, c.width, c.height);
-            shapes[i].draw();
-        }
+        renderShapes();
     });
 
     document.getElementById("undo").addEventListener("click", function() {
         shapes.pop();
+        renderShapes();
     })
 
     document.getElementById("clear").addEventListener("click", function() {
