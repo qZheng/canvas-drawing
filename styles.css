@@ -1,16 +1,84 @@
-.canvas-container {
-    width: 80%;
-    background-color:black;
+* {
+    padding: 0%;
+    margin: 0%;
+    box-sizing: border-box;
+    font-family:Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: 500;
 }
 
-.button-container {
+h1 {
+    margin: 10px;
+    color:#ffffff;
+}
+
+body {
+    text-align: center;
+    justify-content: center;
+    background-color:rgb(66, 66, 66);
+}
+
+#canvas-container {
+    margin: 20px;
+}
+
+#button-container {
+    justify-content: center;
     display: flex;
-    flex-direction: column;
-    
+    flex-direction:row;
 }
-
 
 canvas {
-    background-color:#d8d8d8;
+    background-color: antiquewhite;
+    border-radius:8px;
     justify-content: center;
+}
+
+input {
+    margin: 4px;
+    font-size: 14px;
+}
+
+input[type=button] {
+    border-radius: 8px;
+    min-width: 20px;
+    cursor: pointer;
+    padding: 4px 16px;
+}
+
+input[type=color] {
+    padding: 2px 4px;
+    cursor: pointer;
+    min-width: 20px;
+
+    width: 100px;
+    height: 40px;
+    border-radius: 8px;
+
+}
+
+#undo, #redo {
+    background-color: rgb(255, 150, 111);
+    font-size: larger;
+}
+
+#size {
+    margin-left:20px;
+    margin-right:20px;
+    background: #ddd;
+}
+
+#clear {
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+    height: 10px;
+    background: #ffffff;
+    border-radius: 5px;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    cursor: pointer; /* Pointer cursor */
+    margin-top: -3px;
 }
