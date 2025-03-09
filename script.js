@@ -2,7 +2,6 @@ window.addEventListener("load", function() {
     let c = document.getElementById("testCanvas");
     let ctx = c.getContext("2d");
     let shapes = [];
-    let currentShape = Square;
 
     class Square {
         constructor (size, color, position, drawFunc) {
@@ -61,25 +60,27 @@ window.addEventListener("load", function() {
         currentShape = Triangle;
     });
 
-    c.addEventListener("click", function() {
+    c.addEventListener("click", function(event) {
         let x = event.pageX - this.offsetLeft;
-        let y = event.pageY - this.offsetRight;
+        let y = event.pageY - this.offsetTop;
         let currentSize = document.getElementById("size_slider").value;
         let currentColor = document.getElementById("color_slider").value;
         shapes.push(new currentShape(currentSize, currentColor, [x, y]));
         for (i=0; i<shapes.length; i++) {
-            c.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, c.width, c.height);
             shapes[i].draw();
         }
     });
 
-    document.getElementById("undo").getEventListener("click", function() {
+    document.getElementById("undo").addEventListener("click", function() {
         shapes.pop();
     })
 
     document.getElementById("clear").addEventListener("click", function() {
-        c.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.clearRect(0, 0, c.width, c.height);
     });
+    let currentShape = Square;
+
   
 });
 
