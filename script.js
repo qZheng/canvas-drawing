@@ -3,6 +3,9 @@ window.addEventListener("load", function () {
     let ctx = c.getContext("2d");
     let shapes = [];
     let deletedShapes = [];
+    let isDrawing = false;
+    let currentStroke = []; 
+
 
 
 
@@ -53,6 +56,8 @@ window.addEventListener("load", function () {
         }
     }
 
+    
+
     let currentShape = Square;
 
 
@@ -68,15 +73,37 @@ window.addEventListener("load", function () {
         currentShape = Triangle;
     });
 
-    c.addEventListener("click", function (event) {
+    c.addEventListener("mousedown", function (event) {
+        isDrawing = true;
         let x = event.pageX - this.offsetLeft;
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
         let currentColor = document.getElementById("color_slider").value;
-        shapes.push(new currentShape(currentSize, currentColor, [x, y]));
-        deletedShapes = [];
+        currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
         redrawShapes();
     });
+
+    c.addEventListener("mousemove", function (event) {
+            if (isDrawing) {
+                let x = event.pageX - this.offsetLeft;
+                let y = event.pageY - this.offsetTop;
+                let currentSize = parseInt(document.getElementById("size_slider").value);
+                let currentColor = document.getElementById("color_slider").value;
+                currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
+                redrawShapes();
+            }
+    })
+
+    c.addEventListener("mouseup", function () {
+        isDrawing = false;
+        shapes.push(currentShapes);
+        currentStroke = [];
+    });
+
+    c.addEventListener("mouseleave", function () {
+        isDrawing = false;
+    });
+
 
     document.getElementById("undo").addEventListener("click", function () {
         if (shapes.length != 0) {
@@ -105,6 +132,9 @@ window.addEventListener("load", function () {
         console.log(shapes);
         for (let i = 0; i < shapes.length; i++) {
             shapes[i].draw();
+        }
+        for (let i = 0; i < currentStroke.length; i++) {
+            currentStroke[i].draw();
         }
     }
 });
