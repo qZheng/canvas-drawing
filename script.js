@@ -3,9 +3,6 @@ window.addEventListener("load", function () {
     let ctx = c.getContext("2d");
     let shapes = [];
     let deletedShapes = [];
-    let isDrawing = false;
-    let currentStroke = []; 
-
 
 
 
@@ -74,34 +71,12 @@ window.addEventListener("load", function () {
     });
 
     c.addEventListener("mousedown", function (event) {
-        isDrawing = true;
         let x = event.pageX - this.offsetLeft;
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
         let currentColor = document.getElementById("color_slider").value;
-        currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
+        shapes.push(new currentShape(currentSize, currentColor, [x, y]));
         redrawShapes();
-    });
-
-    c.addEventListener("mousemove", function (event) {
-            if (isDrawing) {
-                let x = event.pageX - this.offsetLeft;
-                let y = event.pageY - this.offsetTop;
-                let currentSize = parseInt(document.getElementById("size_slider").value);
-                let currentColor = document.getElementById("color_slider").value;
-                currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
-                redrawShapes();
-            }
-    })
-
-    c.addEventListener("mouseup", function () {
-        isDrawing = false;
-        shapes.push(currentShapes);
-        currentStroke = [];
-    });
-
-    c.addEventListener("mouseleave", function () {
-        isDrawing = false;
     });
 
 
@@ -133,8 +108,17 @@ window.addEventListener("load", function () {
         for (let i = 0; i < shapes.length; i++) {
             shapes[i].draw();
         }
-        for (let i = 0; i < currentStroke.length; i++) {
-            currentStroke[i].draw();
-        }
+        
+    }
+
+    document.getElementById("save_button").addEventListener("click", function () {
+        let saveData = JSON.stringify(shapes);
+        localStorage.setItem("drawing", saveData);
+    });
+
+    retreivedData = localStorage.getItem("drawing");
+    if (retreivedData) {
+        shapes = JSON.parse(retreivedData);
+        redrawShapes();
     }
 });
