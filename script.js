@@ -8,6 +8,7 @@ window.addEventListener("load", function () {
 
     class Square {
         constructor(size, color, position) {
+            this.type = "Square";
             this.size = size;
             this.color = color;
             this.position = position;
@@ -21,6 +22,7 @@ window.addEventListener("load", function () {
 
     class Triangle {
         constructor(size, color, position) {
+            this.type = "Triangle";
             this.size = size;
             this.color = color;
             this.position = position;
@@ -39,6 +41,7 @@ window.addEventListener("load", function () {
 
     class Circle {
         constructor(size, color, position) {
+            this.type = "Circle";
             this.size = size;
             this.color = color;
             this.position = position;
@@ -75,8 +78,10 @@ window.addEventListener("load", function () {
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
         let currentColor = document.getElementById("color_slider").value;
-        shapes.push(new currentShape(currentSize, currentColor, [x, y]));
-        redrawShapes();
+        let nextShape = new currentShape(currentSize, currentColor, [x, y]);
+        shapes.push(nextShape);
+        nextShape.draw();
+        console.log(shapes);
     });
 
 
@@ -99,26 +104,48 @@ window.addEventListener("load", function () {
     document.getElementById("clear").addEventListener("click", function () {
         shapes = [];
         deletedShapes = [];
+        console.log('clear');
         redrawShapes();
     });
 
     function redrawShapes() {
+        console.log("redraw");
         ctx.clearRect(0, 0, c.width, c.height);
         console.log(shapes);
-        for (let i = 0; i < shapes.length; i++) {
-            shapes[i].draw();
-        }
+        shapes.forEach(function(shape) {
+            shape.draw();
+        });
         
     }
 
     document.getElementById("save_button").addEventListener("click", function () {
         let saveData = JSON.stringify(shapes);
         localStorage.setItem("drawing", saveData);
+        console.log("saved");
     });
 
     retreivedData = localStorage.getItem("drawing");
     if (retreivedData) {
-        shapes = JSON.parse(retreivedData);
+        console.log("retrieved");
+        parsedShapes = JSON.parse(retreivedData);
+        console.log(parsedShapes);
+        shapes = parsedShapes.map(function(shape) {
+            switch(shape.type) {
+                case "Square":
+                    console.log("square");
+                    console.log(shape);
+                    return new Square(shape.size, shape.color, shape.position);
+                case "Triangle":
+                    return new Triangle(shape.size, shape.color, shape.position);    
+                case "Circle":
+                    return new Circle(shape.size, shape.color, shape.position);
+                default:
+                    console.log("Failure");
+                    break;
+            }
+        });
+        // shapes.push(new Square(100, 100, 50, "red"));
+        console.log(shapes);
         redrawShapes();
     }
 });
