@@ -19,9 +19,9 @@ window.addEventListener("load", function () {
 
     // Stroke Brush Object Class
     /**
-        * @param color => color of shape
-        * @param size => size of shape
-        * @param initialPoint => Position of first Point in Stroke Shape
+        * @param {string} color color of shape
+        * @param {number} size size of shape
+        * @param {Array<Array<number>>} initialPoint Position of first Point in Stroke Shape
     */
     class Stroke {
         
@@ -57,9 +57,9 @@ window.addEventListener("load", function () {
 
     // Square Object Class
     /**
-         * @param color => color of shape
-         * @param size => size of shape
-         * @param position => [x,y] array of coordinates of shape
+         * @param {string} color color of shape
+         * @param {number} size size of shape
+         * @param {Array<number>} position array of coordinates of shape
     */
     class Square {
         constructor(color, size, position) {
@@ -78,9 +78,9 @@ window.addEventListener("load", function () {
 
     // Circle Object Class
     /**
-        * @param color => color of shape
-        * @param size => size of shape
-        * @param position => [x,y] array of coordinates of shape
+         * @param {string} color color of shape
+         * @param {number} size size of shape
+         * @param {Array<number>} position array of coordinates of shape
     */
     class Circle {
         constructor(color, size, position) {
@@ -101,9 +101,9 @@ window.addEventListener("load", function () {
 
     // Triangle Object Class
     /**
-        * @param color => color of shape
-        * @param size => size of shape
-        * @param position => [x,y] array of coordinates of shape
+         * @param {string} color color of shape
+         * @param {number} size size of shape
+         * @param {Array<number>} position array of coordinates of shape
     */
     class Triangle {
         constructor(color, size, position) {
