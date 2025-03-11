@@ -17,7 +17,7 @@ window.addEventListener("load", function () {
 
     class Stroke {
         constructor(color, size, initialPoint) {
-            thix.type = "Stroke";
+            this.type = "Stroke";
             this.color = color;
             this.size = size;
             this.points = [initialPoint];
@@ -117,6 +117,7 @@ window.addEventListener("load", function () {
     });
 
     c.addEventListener("mousedown", function (event) {
+        isDrawing = true;
         let x = event.pageX - this.offsetLeft;
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
@@ -211,9 +212,6 @@ window.addEventListener("load", function () {
             previewShape.draw();
         }
         console.log(shapes);
-        shapes.forEach(function(shape) {
-            shape.draw();
-        });
         
     }
 
@@ -231,7 +229,9 @@ window.addEventListener("load", function () {
         shapes = parsedShapes.map(function(shape) {
             switch(shape.type) {
                 case "Stroke":
-                    return new Stroke(shape.color, shape.size, shape.initialPoint);
+                    let stroke = new Stroke(shape.color, shape.size, shape.points[0]); 
+                    shape.points.slice(1).forEach((point) => stroke.addPoint(point)); 
+                    return stroke;
                 case "Square":
                     return new Square(shape.color, shape.size, shape.position);
                 case "Triangle":
