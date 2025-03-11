@@ -17,6 +17,7 @@ window.addEventListener("load", function () {
 
     class Stroke {
         constructor(color, size, initialPoint) {
+            thix.type = "Stroke";
             this.color = color;
             this.size = size;
             this.points = [initialPoint];
@@ -43,6 +44,7 @@ window.addEventListener("load", function () {
 
     class Square {
         constructor(color, size, position) {
+            this.type = "Square";
             this.color = color;
             this.size = size;
             this.position = position;
@@ -56,6 +58,7 @@ window.addEventListener("load", function () {
 
     class Circle {
         constructor(color, size, position) {
+            this.type = "Circle";
             this.color = color;
             this.size = size;
             this.position = position;
@@ -71,6 +74,7 @@ window.addEventListener("load", function () {
 
     class Triangle {
         constructor(color, size, position) {
+            this.type = "Triangle";
             this.color = color;
             this.size = size;
             this.position = position;
@@ -226,14 +230,14 @@ window.addEventListener("load", function () {
         console.log(parsedShapes);
         shapes = parsedShapes.map(function(shape) {
             switch(shape.type) {
+                case "Stroke":
+                    return new Stroke(shape.color, shape.size, shape.initialPoint);
                 case "Square":
-                    console.log("square");
-                    console.log(shape);
-                    return new Square(shape.size, shape.color, shape.position);
+                    return new Square(shape.color, shape.size, shape.position);
                 case "Triangle":
-                    return new Triangle(shape.size, shape.color, shape.position);    
+                    return new Triangle(shape.color, shape.size, shape.position);    
                 case "Circle":
-                    return new Circle(shape.size, shape.color, shape.position);
+                    return new Circle(shape.color, shape.size, shape.position);
                 default:
                     console.log("Failure");
                     break;
