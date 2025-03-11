@@ -1,75 +1,114 @@
+/*
+Dylan Nguyen and Lucas Zheng
+400592199, 400556902
+
+3/10/2025
+JS script for the canvas assignment.
+*/
+
+
 window.addEventListener("load", function () {
     let c = document.getElementById("testCanvas");
     let ctx = c.getContext("2d");
     let shapes = [];
     let deletedShapes = [];
     let isDrawing = false;
-    let currentStroke = []; 
+    let currentStroke = null; 
 
-
-
-
-    class Square {
-        constructor(size, color, position) {
-            this.size = size;
+    class Stroke {
+        constructor(color, size, initialPoint) {
             this.color = color;
-            this.position = position;
+            this.size = size;
+            this.points = [initialPoint];
+        }
+
+        addPoint(point) {
+            this.points.push(point);
         }
 
         draw() {
-            ctx.fillStyle = this.color;
-            ctx.fillRect(this.position[0] - this.size / 2, this.position[1] - this.size / 2, this.size, this.size);
+            ctx.strokeStyle = this.color;
+            ctx.lineWidth = this.size;
+            ctx.beginPath();
+            this.points.forEach((point, index) => {
+                if (index === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            });
+            ctx.stroke();
         }
     }
 
-    class Triangle {
-        constructor(size, color, position) {
-            this.size = size;
+    class Square {
+        constructor(color, size, position) {
             this.color = color;
+            this.size = size;
             this.position = position;
         }
 
         draw() {
             ctx.fillStyle = this.color;
-            ctx.beginPath();
-            ctx.moveTo(this.position[0], this.position[1] - this.size / 2);
-            ctx.lineTo(this.position[0] - this.size / 2, this.position[1] + this.size / 2);
-            ctx.lineTo(this.position[0] + this.size / 2, this.position[1] + this.size / 2);
-            ctx.closePath();
-            ctx.fill();
+            ctx.fillRect(this.position[0] - this.size/2, this.position[1] - this.size/2, this.size, this.size);
         }
     }
 
     class Circle {
-        constructor(size, color, position) {
-            this.size = size;
+        constructor(color, size, position) {
             this.color = color;
+            this.size = size;
             this.position = position;
         }
 
         draw() {
             ctx.fillStyle = this.color;
             ctx.beginPath();
-            ctx.arc(this.position[0], this.position[1], this.size / 2, 0, 2 * Math.PI);
+            ctx.arc(this.position[0], this.position[1], this.size/2, 0, 2 * Math.PI);
+            ctx.fill();
+        }
+    }
+
+    class Triangle {
+        constructor(color, size, position) {
+            this.color = color;
+            this.size = size;
+            this.position = position;
+        }
+
+        draw() {
+            ctx.fillStyle = this.color;
+            ctx.beginPath();
+            ctx.moveTo(this.position[0], this.position[1] - this.size/2);
+            ctx.lineTo(this.position[0] - this.size/2, this.position[1] + this.size/2);
+            ctx.lineTo(this.position[0] + this.size/2, this.position[1] + this.size/2);
             ctx.closePath();
             ctx.fill();
         }
     }
 
-    
+    let currentShape = Stroke;
+    let drawingMode = 'line';
+    let previewShape = null;
+    let startX, startY;
 
-    let currentShape = Square;
+    document.getElementById("line_button").addEventListener("click", function() {
+        drawingMode = 'line';
+        currentShape = Stroke;
+    });
 
-
-    document.getElementById("circle_button").addEventListener("click", function () {
+    document.getElementById("circle_button").addEventListener("click", function() {
+        drawingMode = 'shape';
         currentShape = Circle;
     });
 
-    document.getElementById("square_button").addEventListener("click", function () {
+    document.getElementById("square_button").addEventListener("click", function() {
+        drawingMode = 'shape';
         currentShape = Square;
     });
 
-    document.getElementById("triangle_button").addEventListener("click", function () {
+    document.getElementById("triangle_button").addEventListener("click", function() {
+        drawingMode = 'shape';
         currentShape = Triangle;
     });
 
@@ -79,29 +118,59 @@ window.addEventListener("load", function () {
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
         let currentColor = document.getElementById("color_slider").value;
-        currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
+
+        if (drawingMode === 'line') {
+            currentStroke = new currentShape(currentColor, currentSize, {x, y});
+        } else if (drawingMode === 'shape') {
+            startX = x;
+            startY = y;
+            previewShape = new currentShape(currentColor, currentSize, [x, y]);
+        }
         redrawShapes();
     });
 
     c.addEventListener("mousemove", function (event) {
-            if (isDrawing) {
-                let x = event.pageX - this.offsetLeft;
-                let y = event.pageY - this.offsetTop;
-                let currentSize = parseInt(document.getElementById("size_slider").value);
-                let currentColor = document.getElementById("color_slider").value;
-                currentStroke.push(new currentShape(currentSize, currentColor, [x, y]));
+        if (isDrawing) {
+            let x = event.pageX - this.offsetLeft;
+            let y = event.pageY - this.offsetTop;
+            
+            if (drawingMode === 'line') {
+                currentStroke.addPoint({x, y});
+                redrawShapes();
+            } else if (drawingMode === 'shape' && previewShape) {
+                let deltaX = x - startX;
+                let deltaY = y - startY;
+                let size = Math.sqrt(deltaX ** 2 + deltaY ** 2);
+                previewShape.size = size;
+                previewShape.position = [startX + deltaX / 2, startY + deltaY / 2];
                 redrawShapes();
             }
-    })
+        }
+    });
 
     c.addEventListener("mouseup", function () {
         isDrawing = false;
-        shapes.push(currentShapes);
-        currentStroke = [];
+        if (drawingMode === 'line' && currentStroke) {
+            shapes.push(currentStroke);
+            currentStroke = null;
+        } else if (drawingMode === 'shape' && previewShape) {
+            shapes.push(previewShape);
+            previewShape = null;
+        }
+        redrawShapes();
     });
 
     c.addEventListener("mouseleave", function () {
         isDrawing = false;
+        if (drawingMode === 'line' && currentStroke) {
+            shapes.push(currentStroke);
+            currentStroke = null;
+            redrawShapes();
+        } else if (drawingMode === 'shape' && previewShape) {
+            shapes.push(previewShape);
+            previewShape = null;
+            redrawShapes();
+        }
     });
 
 
@@ -129,12 +198,12 @@ window.addEventListener("load", function () {
 
     function redrawShapes() {
         ctx.clearRect(0, 0, c.width, c.height);
-        console.log(shapes);
-        for (let i = 0; i < shapes.length; i++) {
-            shapes[i].draw();
+        shapes.forEach(shape => shape.draw());
+        if (currentStroke) {
+            currentStroke.draw();
         }
-        for (let i = 0; i < currentStroke.length; i++) {
-            currentStroke[i].draw();
+        if (previewShape) {
+            previewShape.draw();
         }
     }
 });
