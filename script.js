@@ -15,21 +15,28 @@ window.addEventListener("load", function () {
     let isDrawing = false;
     let currentStroke = null; 
 
+    // Classes for their respective brushes
+
+    // Stroke Brush Object Class
     class Stroke {
         constructor(color, size, initialPoint) {
             this.type = "Stroke";
             this.color = color;
             this.size = size;
+            // Stores all point history in array
             this.points = [initialPoint];
         }
 
+        // Adds a point to the points array
         addPoint(point) {
             this.points.push(point);
         }
 
+        // Renders Stroke
         draw() {
             ctx.strokeStyle = this.color;
             ctx.lineWidth = this.size;
+            // Connects each point in order to create a line
             ctx.beginPath();
             this.points.forEach((point, index) => {
                 if (index === 0) {
@@ -42,6 +49,7 @@ window.addEventListener("load", function () {
         }
     }
 
+    // Square Object Class
     class Square {
         constructor(color, size, position) {
             this.type = "Square";
@@ -50,12 +58,14 @@ window.addEventListener("load", function () {
             this.position = position;
         }
 
+        // Renders Rectangle
         draw() {
             ctx.fillStyle = this.color;
             ctx.fillRect(this.position[0] - this.size/2, this.position[1] - this.size/2, this.size, this.size);
         }
     }
 
+    // Circle Object Class
     class Circle {
         constructor(color, size, position) {
             this.type = "Circle";
@@ -64,6 +74,7 @@ window.addEventListener("load", function () {
             this.position = position;
         }
 
+        // Renders Circle
         draw() {
             ctx.fillStyle = this.color;
             ctx.beginPath();
@@ -72,6 +83,7 @@ window.addEventListener("load", function () {
         }
     }
 
+    // Triangle Object Class
     class Triangle {
         constructor(color, size, position) {
             this.type = "Triangle";
@@ -81,6 +93,7 @@ window.addEventListener("load", function () {
         }
 
         draw() {
+            // Creates 3 points and lines up to create triangle
             ctx.fillStyle = this.color;
             ctx.beginPath();
             ctx.moveTo(this.position[0], this.position[1] - this.size/2);
@@ -91,11 +104,13 @@ window.addEventListener("load", function () {
         }
     }
 
+    // Initializes default drawing style variables
     let currentShape = Stroke;
     let drawingMode = 'line';
     let previewShape = null;
     let startX, startY;
 
+    // Attaches event listeners to all shape buttons and sets the drawing mode to the corresponding button
     document.getElementById("line_button").addEventListener("click", function() {
         drawingMode = 'line';
         currentShape = Stroke;
@@ -116,6 +131,7 @@ window.addEventListener("load", function () {
         currentShape = Triangle;
     });
 
+    // Initializes start (x,y) and creates preview shape render object
     c.addEventListener("mousedown", function (event) {
         isDrawing = true;
         let x = event.pageX - this.offsetLeft;
@@ -133,15 +149,20 @@ window.addEventListener("load", function () {
         redrawShapes();
     });
 
+    // Edits preview shape based on mouse move
     c.addEventListener("mousemove", function (event) {
         if (isDrawing) {
             let x = event.pageX - this.offsetLeft;
             let y = event.pageY - this.offsetTop;
             
+            // Adds new point to stroke line
             if (drawingMode === 'line') {
                 currentStroke.addPoint({x, y});
                 redrawShapes();
+
+            // Edits Preview shape by calculating size and position off change in position
             } else if (drawingMode === 'shape' && previewShape) {
+                // delta means change in
                 let deltaX = x - startX;
                 let deltaY = y - startY;
                 let size = Math.sqrt(deltaX ** 2 + deltaY ** 2);
@@ -152,7 +173,9 @@ window.addEventListener("load", function () {
         }
     });
 
-    c.addEventListener("mouseup", function () {
+    
+    // Stops drawing and saves preview shape to shapes array
+    function stopDrawing() {
         isDrawing = false;
         if (drawingMode === 'line' && currentStroke) {
             shapes.push(currentStroke);
@@ -162,22 +185,15 @@ window.addEventListener("load", function () {
             previewShape = null;
         }
         redrawShapes();
-    });
+    }
 
-    c.addEventListener("mouseleave", function () {
-        isDrawing = false;
-        if (drawingMode === 'line' && currentStroke) {
-            shapes.push(currentStroke);
-            currentStroke = null;
-            redrawShapes();
-        } else if (drawingMode === 'shape' && previewShape) {
-            shapes.push(previewShape);
-            previewShape = null;
-            redrawShapes();
-        }
-    });
+    // Stops drawing on mouse release. Same as below.
+    c.addEventListener("mouseup", stopDrawing());
 
+    // If mouse leaves canvas, stops drawing shape. Same as above
+    c.addEventListener("mouseleave", stopDrawing());
 
+    // Removes last shape from shapes array and stores in deleted shapes history array
     document.getElementById("undo").addEventListener("click", function () {
         if (shapes.length != 0) {
             deletedShapes.unshift(shapes.pop());
@@ -186,6 +202,7 @@ window.addEventListener("load", function () {
         
     });
 
+    // Reverts last deleted shape and adds back to shapes array
     document.getElementById("redo").addEventListener("click", function () {
         if (deletedShapes.length != 0) {
             shapes.push(deletedShapes[0]);
@@ -194,6 +211,7 @@ window.addEventListener("load", function () {
         }
     });
 
+    // Clears all shapes and deleted shapes from the array and redraws canvas
     document.getElementById("clear").addEventListener("click", function () {
         shapes = [];
         deletedShapes = [];
@@ -201,6 +219,7 @@ window.addEventListener("load", function () {
         redrawShapes();
     });
 
+    // Redraws shapes after each canvas update
     function redrawShapes() {
         console.log("redraw");
         ctx.clearRect(0, 0, c.width, c.height);
@@ -215,17 +234,21 @@ window.addEventListener("load", function () {
         
     }
 
+    // Stores the shapes saved data array into JSON for local storage
     document.getElementById("save_button").addEventListener("click", function () {
         let saveData = JSON.stringify(shapes);
         localStorage.setItem("drawing", saveData);
         console.log("saved");
     });
 
+    // On load, retrieves local storage data
     retreivedData = localStorage.getItem("drawing");
+    // If data exists
     if (retreivedData) {
         console.log("retrieved");
         parsedShapes = JSON.parse(retreivedData);
         console.log(parsedShapes);
+        // Recreates shape objects based on stored data information
         shapes = parsedShapes.map(function(shape) {
             switch(shape.type) {
                 case "Stroke":
