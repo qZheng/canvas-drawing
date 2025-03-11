@@ -1,6 +1,5 @@
 /*
 Dylan Nguyen and Lucas Zheng
-400592199, 400556902
 
 3/10/2025
 JS script for the canvas assignment.
