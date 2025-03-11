@@ -113,7 +113,6 @@ window.addEventListener("load", function () {
     });
 
     c.addEventListener("mousedown", function (event) {
-        isDrawing = true;
         let x = event.pageX - this.offsetLeft;
         let y = event.pageY - this.offsetTop;
         let currentSize = parseInt(document.getElementById("size_slider").value);
@@ -193,10 +192,12 @@ window.addEventListener("load", function () {
     document.getElementById("clear").addEventListener("click", function () {
         shapes = [];
         deletedShapes = [];
+        console.log('clear');
         redrawShapes();
     });
 
     function redrawShapes() {
+        console.log("redraw");
         ctx.clearRect(0, 0, c.width, c.height);
         shapes.forEach(shape => shape.draw());
         if (currentStroke) {
@@ -205,5 +206,41 @@ window.addEventListener("load", function () {
         if (previewShape) {
             previewShape.draw();
         }
+        console.log(shapes);
+        shapes.forEach(function(shape) {
+            shape.draw();
+        });
+        
+    }
+
+    document.getElementById("save_button").addEventListener("click", function () {
+        let saveData = JSON.stringify(shapes);
+        localStorage.setItem("drawing", saveData);
+        console.log("saved");
+    });
+
+    retreivedData = localStorage.getItem("drawing");
+    if (retreivedData) {
+        console.log("retrieved");
+        parsedShapes = JSON.parse(retreivedData);
+        console.log(parsedShapes);
+        shapes = parsedShapes.map(function(shape) {
+            switch(shape.type) {
+                case "Square":
+                    console.log("square");
+                    console.log(shape);
+                    return new Square(shape.size, shape.color, shape.position);
+                case "Triangle":
+                    return new Triangle(shape.size, shape.color, shape.position);    
+                case "Circle":
+                    return new Circle(shape.size, shape.color, shape.position);
+                default:
+                    console.log("Failure");
+                    break;
+            }
+        });
+        // shapes.push(new Square(100, 100, 50, "red"));
+        console.log(shapes);
+        redrawShapes();
     }
 });
